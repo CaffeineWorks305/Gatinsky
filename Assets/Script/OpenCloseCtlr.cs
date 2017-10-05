@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine.SceneManagement;
 
 public class OpenCloseCtlr : MonoBehaviour {
@@ -8,15 +9,15 @@ public class OpenCloseCtlr : MonoBehaviour {
     private bool closes;
     public bool isOpen;
 
-    int maxHP = 100;
+    private int maxHP = 100;
     public int actualHP;
     public bool isDanger; //Banderas. Permiten al programa conocer detalles sobre la ventana y así producir una acción a tono
     public bool isTouched;
 
     public Animator animator; //Declarar Animator para tener acceo a el
     public Collider2D collider; //Declarar Collider para poder modificarlo también
-    public GameObject enemy;
-    EnemyAttack enemyAttack;
+    //Elimine que se busque el enemyAttack al iniciar el juego, debido a que no es necesario y se arregla en el fixedupdate con la lista
+    public List<GameObject> enemys; //Lista de enemigos que tocan la ventana
 
     Vector2 openOffset = new Vector2(-0.1651628f, 0.0240237f); //Posición Collider Ventana Abierta
     Vector2 closedOffset = new Vector2(0.12f, 0.0240237f); //Posición Collider Ventana Cerrada
@@ -26,18 +27,12 @@ public class OpenCloseCtlr : MonoBehaviour {
         //Inicializar Animator y Collider al arrancar el programa
         animator = GetComponentInChildren<Animator>();
         collider = GetComponentInChildren<Collider2D>();
-        enemy = GameObject.FindGameObjectWithTag("Enemy");
-
-        if (!enemyAttack)
-            enemyAttack = enemy.GetComponentInChildren<EnemyAttack>();
-        else
-            Debug.Log("No se encuentra el script 'EnemyAttack' Por favor agréguelo");
-
-
 
         //Inicializar variables y banderas.
         this.actualHP = maxHP;
         this.isDanger = false;
+        //Inicializando la lista de enemigos que tocan la ventana;
+        enemys = new List<GameObject> ();
     }
 
     void OnTriggerEnter2D(Collider2D other)
@@ -50,6 +45,7 @@ public class OpenCloseCtlr : MonoBehaviour {
 
         if (other.gameObject.name == "Invader")
         {
+        	enemys.Add(other.gameObject); //Agregamos el nuevo enemigo a la lista
             if((this.isDanger)&&(!this.isOpen))
             openFunction();
         }
@@ -61,7 +57,9 @@ public class OpenCloseCtlr : MonoBehaviour {
         {
             isTouched = false;
         }
-
+		if (other.gameObject.name == "Invader") {
+			enemys.Remove(other.gameObject); // Eliminamos el enemigo que sale de la lista
+		}
     }
 
     void openFunction()
@@ -106,8 +104,13 @@ public class OpenCloseCtlr : MonoBehaviour {
 
     void FixedUpdate()
     {
-        if ((enemyAttack.windowTouched)&&(this.actualHP>0))
-            TakeDamage(enemyAttack.attackDamage);
+    	//Si la lista no esta vacia, revisamos y hacemos el daño de cada enemigo
+		if (enemys.Count != 0) {
+			for (int i = 0; i < enemys.Count; i++) {
+				if (this.actualHP>0)
+            	TakeDamage(enemys[i].GetComponent<EnemyAttack>().attackDamage);
+			}
+		}
 
         if (isDanger)
             openFunction();
