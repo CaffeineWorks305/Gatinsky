@@ -69,14 +69,14 @@ public class Main : MonoBehaviour {
 
         //crear Ventanas
         Vector2 winPos = new Vector2(-9.0f, 1.4f);
-        Vector2 offsetPos = new Vector2(4.5f, 0.0f);
+        Vector2 offsetPos = new Vector2(4.0f, 0.0f);
         Vector2 winArrayPos = new Vector2(-2.0f, 1.0f);
         //Instantiate(winArray, winArrayPos, transform.rotation);
 
         Instantiate(window1, winPos, transform.rotation);
-        //Instantiate(window2, winPos + offsetPos, transform.rotation);
-        //Instantiate(window3, winPos + offsetPos * 2, transform.rotation);
-        //Instantiate(window4, winPos + offsetPos * 3, transform.rotation);
+        Instantiate(window2, winPos + offsetPos, transform.rotation);
+        Instantiate(window3, winPos + offsetPos * 2, transform.rotation);
+        Instantiate(window4, winPos + offsetPos * 3, transform.rotation);
         Instantiate(window5, winPos + offsetPos * 4, transform.rotation);
 
         //crear Enemigos
