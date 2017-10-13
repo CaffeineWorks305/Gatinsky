@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2015
+# Visual Studio 2017
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gato", "Gato.csproj", "{54D831DC-F974-2626-4D3F-8B46BD10208A}"
 EndProject
 Global

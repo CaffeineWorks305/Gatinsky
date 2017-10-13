@@ -80,8 +80,10 @@ public class Main : MonoBehaviour {
         Instantiate(window5, winPos + offsetPos * 4, transform.rotation);
 
         //crear Enemigos
-        Vector2 enemyPos = new Vector2(-8.38f, 1.58f);
+        Vector2 enemyPos = new Vector2(-8.38f, 1.0f);
+        Vector2 offsetY = new Vector2(0.0f,1.0f);
         Instantiate(enemy, enemyPos, transform.rotation);
+        Instantiate(enemy, enemyPos+offsetY, transform.rotation);
         yield return new WaitForSeconds(spawnTime * Random.Range(0.0f, 0.7f));
 
     }

@@ -13,6 +13,7 @@ public class OpenCloseCtlr : MonoBehaviour {
     public int actualHP;
     public bool isDanger; //Banderas. Permiten al programa conocer detalles sobre la ventana y así producir una acción a tono
     public bool isTouched;
+    public bool isTouchedByEnemy;
 
     public Animator animator; //Declarar Animator para tener acceo a el
     public Collider2D collider; //Declarar Collider para poder modificarlo también
@@ -31,41 +32,47 @@ public class OpenCloseCtlr : MonoBehaviour {
         //Inicializar variables y banderas.
         this.actualHP = maxHP;
         this.isDanger = false;
+        closeFunction();
         //Inicializando la lista de enemigos que tocan la ventana;
         enemys = new List<GameObject> ();
     }
 
     void OnTriggerEnter2D(Collider2D other)
     {
-        if ((other.gameObject.name == "Gatinsky_Big")&&(this.isOpen))
+        if (other.gameObject.name == "Gatinsky")
         {
-            closeFunction();
             isTouched = true;
         }
 
         if (other.gameObject.name == "Invader")
         {
-        	enemys.Add(other.gameObject); //Agregamos el nuevo enemigo a la lista
-            if((this.isDanger)&&(!this.isOpen))
-            openFunction();
+            isTouchedByEnemy = true;
+            enemys.Add(other.gameObject); //Agregamos el nuevo enemigo a la lista
+
+            //if ((this.isDanger)&&(!this.isOpen))
+            //openFunction();
         }
     }
 
     void OnTriggerExit2D(Collider2D other)
     {
-        if (other.gameObject.name == "Gatinsky_Big")
+        if (other.gameObject.name == "Gatinsky")
         {
             isTouched = false;
         }
 		if (other.gameObject.name == "Invader") {
 			enemys.Remove(other.gameObject); // Eliminamos el enemigo que sale de la lista
-		}
+            isTouchedByEnemy = false;
+        }
     }
 
     void openFunction()
     {
         this.isOpen = true; // Bandera: Ventana Abierta
-        this.animator.SetTrigger("opens"); //Manda a llamar animación de ventana abierta
+        
+        //Manda a llamar animación de ventana abierta
+        this.animator.SetBool("opens",true);
+        this.animator.SetBool("closes", false);
         this.collider.offset = openOffset; //Mueve el collider de acuerdo a la posición "física" de la    
     }
 
@@ -74,7 +81,9 @@ public class OpenCloseCtlr : MonoBehaviour {
         this.isOpen = false;
         this.actualHP = this.maxHP;
 
-        this.animator.SetTrigger("closes"); //Manda a llamar animación de ventana cerrada
+        //Manda a llamar animación de ventana cerrada
+        this.animator.SetBool("opens", false);
+        this.animator.SetBool("closes", true);
         this.collider.offset = closedOffset; //Mueve el collider de acuerdo a la posición "física" de la ventana.
         this.isDanger = false;
     }
@@ -82,9 +91,11 @@ public class OpenCloseCtlr : MonoBehaviour {
     public void TakeDamage(int amount)
     {
         //Restar energía una cantidad dictada por amount
-        this.actualHP -= amount;
-        Debug.Log(actualHP);
-
+        if ((isTouchedByEnemy)&&(!isOpen))
+        {
+            this.actualHP -= amount;
+            Debug.Log(actualHP);
+        }
         //reducir el tamaño de la barra de energía
         //UpdateHealthBar(actualHP);
 
@@ -115,7 +126,7 @@ public class OpenCloseCtlr : MonoBehaviour {
         if (isDanger)
             openFunction();
 
-        if (isTouched)
+        if ((isTouched)&&(isOpen))
             closeFunction();
 
     }
